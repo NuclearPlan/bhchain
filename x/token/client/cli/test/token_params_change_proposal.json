@@ -1,0 +1,64 @@
+{
+  "title": "Token Parameters Change",
+  "description": "token parameter change proposal",
+  "symbol": "testtoken",
+  "votetime": 100,
+  "changes": [
+    {
+      "key": "send_enabled",
+      "value": true
+    },
+    {
+      "key": "deposit_enabled",
+      "value": false
+    },
+    {
+      "key": "withdrawal_enabled",
+      "value": false
+    },
+    {
+      "key": "collect_threshold",
+      "value": 10000000000
+    },
+    {
+      "key": "deposit_threshold",
+      "value": 20000000000
+    },
+    {
+      "key": "open_fee",
+      "value": 30000000000
+    },
+    {
+      "key": "sys_open_fee",
+      "value": 40000000000
+    },
+    {
+      "key": "withdrawal_fee_rate",
+      "value": 2
+    },
+    {
+      "key": "max_op_cu_number",
+      "value": 6
+    },
+    {
+      "key": "systransfer_num",
+      "value": 500000
+    },
+    {
+      "key": "op_cu_systransfer_num",
+      "value": 10000000
+    },
+    {
+      "key": "gas_limit",
+      "value": 90000000000
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "hbc",
+      "amount": "10000"
+    }
+  ]
+}
+
+
