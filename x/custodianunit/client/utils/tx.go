@@ -7,6 +7,9 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+
 	"github.com/bluehelix-chain/bhchain/client/context"
 	"github.com/bluehelix-chain/bhchain/client/flags"
 	"github.com/bluehelix-chain/bhchain/client/input"
@@ -14,8 +17,6 @@ import (
 	"github.com/bluehelix-chain/bhchain/codec"
 	sdk "github.com/bluehelix-chain/bhchain/types"
 	authtypes "github.com/bluehelix-chain/bhchain/x/custodianunit/types"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 // GasEstimateResponse defines a response definition for tx gas estimation.
@@ -117,6 +118,20 @@ func CompleteAndBroadcastTxCLI(txBldr authtypes.TxBuilder, cliCtx context.CLICon
 	passphrase, err := keys.GetPassphrase(fromName)
 	if err != nil {
 		return err
+	}
+
+	if viper.GetBool(flags.FlagPrintOnly) {
+		stdSignMsg, err := txBldr.BuildSignMsg(msgs)
+		if err != nil {
+			return err
+		}
+		sig, err := authtypes.MakeSignature(txBldr.Keybase(), fromName, passphrase, stdSignMsg)
+		if err != nil {
+			return err
+		}
+		json := cliCtx.Codec.MustMarshalJSON(authtypes.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, []authtypes.StdSignature{sig}, stdSignMsg.Memo))
+		_, _ = fmt.Fprintf(os.Stderr, "%s\n\n", json)
+		return nil
 	}
 
 	// build and sign the transaction

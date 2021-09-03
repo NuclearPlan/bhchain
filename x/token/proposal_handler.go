@@ -205,6 +205,14 @@ func processIBCTokenChangeParam(key, value string, ti *sdk.IBCToken, cdc *codec.
 		}
 		ti.NeedCollectFee = val
 
+	case sdk.KeyNonceBased:
+		val := false
+		err := cdc.UnmarshalJSON([]byte(value), &val)
+		if err != nil {
+			return err
+		}
+		ti.IsNonceBased = val
+
 	default:
 		return errors.New(fmt.Sprintf("Unkonwn parameter:%v for token %s", key, ti.Symbol))
 	}

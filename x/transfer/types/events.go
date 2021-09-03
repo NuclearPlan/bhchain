@@ -16,6 +16,7 @@ const (
 	EventTypeWithdrawalSignFinish   = "withdrawal_sign_finish"
 	EventTypeWithdrawalFinish       = "withdrawal_finish"
 	EventTypeCancelWithdrawal       = "cancel_withdrawal"
+	EventTypeForceCancelWithdrawal  = "force_cancel_withdrawal"
 	EventTypeSysTransfer            = "sys_transfer"
 	EventTypeSysTransferWaitSign    = "sys_transfer_wait_sign"
 	EventTypeSysTransferSignFinish  = "sys_transfer_sign_finish"
@@ -25,6 +26,7 @@ const (
 	EventTypeOpcuTransferSignFinish = "opcu_transfer_sign_finish"
 	EventTypeOpcuTransferFinish     = "opcu_transfer_finish"
 	EventTypeOrderRetry             = "order_retry"
+	EventTypeForceUpdateCUNonce     = "update_cu_nonce"
 
 	AttributeKeyRecipient       = "recipient"
 	AttributeKeySender          = "sender"

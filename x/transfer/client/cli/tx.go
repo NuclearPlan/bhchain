@@ -37,9 +37,11 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		SendTxCmd(cdc),
 		MultiSendTxCmd(cdc),
 		CancelWithDrawalCmd(cdc),
+		ForceCancelWithDrawalCmd(cdc),
 		DepositCmd(cdc),
 		WithDrawalCmd(cdc),
 		RecollectCmd(cdc),
+		ForceUpdateCUNonceCmd(cdc),
 	)
 	return txCmd
 }
@@ -203,7 +205,6 @@ func DepositCmd(cdc *codec.Codec) *cobra.Command {
 
 func CancelWithDrawalCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		//  fromCU, toCU, toAddr, symbol, hash, orderID, memo string, amount sdk.Int, index uint16, height uint64
 		Use:   "cancelwithdrawal [from_address] [orderid]",
 		Short: "cancel withdrawal tx",
 		Args:  cobra.MinimumNArgs(1),
@@ -212,6 +213,28 @@ func CancelWithDrawalCmd(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContextWithFrom(args[0]).WithCodec(cdc)
 
 			msg := types.NewMsgCancelWithdrawal(cliCtx.GetFromAddress().String(), args[1])
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+	cmd = client.PostCommands(cmd)[0]
+
+	return cmd
+}
+
+func ForceCancelWithDrawalCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "forcecancel [from_address] [orderid]",
+		Short: "force cancel withdrawal tx, only available for key nodes",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txBldr := custodianunit.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithFrom(args[0]).WithCodec(cdc)
+
+			msg := types.NewMsgForceCancelWithdrawal(cliCtx.GetFromAddress().String(), args[1])
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -278,6 +301,35 @@ func RecollectCmd(cdc *codec.Codec) *cobra.Command {
 
 			orders := strings.Split(args[0], ",")
 			msg := types.NewMsgRecollect(cliCtx.GetFromAddress().String(), orders)
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	cmd = client.PostCommands(cmd)[0]
+
+	return cmd
+}
+
+func ForceUpdateCUNonceCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "updatenonce [orderIDs]",
+		Short: "update opcu nonce",
+		Long: `  update opcu nonce
+  Example: bhcli tx transfer updatenonce HBCxxxx ht 3 0x2e9a512fc6fea120e567ed5faef1440e4f66b5ff --from node0`,
+
+		Args: cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txBldr := custodianunit.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			nonce, _ := strconv.Atoi(args[2])
+
+			msg := types.NewMsgForceUpdateCUNonce(cliCtx.GetFromAddress().String(), args[0], args[1], args[3], uint64(nonce))
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
