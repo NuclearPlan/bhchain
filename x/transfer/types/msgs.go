@@ -30,6 +30,7 @@ var (
 	_ sdk.Msg = &MsgMultiSend{}
 	_ sdk.Msg = &MsgOrderRetry{}
 	_ sdk.Msg = &MsgCancelWithdrawal{}
+	_ sdk.Msg = &MsgForceCancelWithdrawal{}
 )
 
 // MsgSend - high level transaction of the coin module
@@ -1491,6 +1492,56 @@ func (msg MsgOrderRetry) IsSettleOnlyMsg() bool {
 	return true
 }
 
+//fix bug--opcu statu locked
+type MsgForceUpdateCUNonce struct {
+	FromCU    string `json:"from_cu"`
+	CUAddr    string `json:"opcu_addr"`
+	Nonce     uint64 `json:"nonce"`
+	Chain     string `json:"chain"`
+	AssetAddr string `json:"asset_addr"`
+}
+
+func NewMsgForceUpdateCUNonce(fromCU string, cuAddr string, chain string, assetAddr string, nonce uint64) MsgForceUpdateCUNonce {
+	msg := MsgForceUpdateCUNonce{
+		FromCU:    fromCU,
+		CUAddr:    cuAddr,
+		Nonce:     nonce,
+		Chain:     chain,
+		AssetAddr: assetAddr,
+	}
+
+	return msg
+}
+
+//nolint
+func (msg MsgForceUpdateCUNonce) Route() string { return RouterKey }
+func (msg MsgForceUpdateCUNonce) Type() string  { return "update_opcu_nonce" }
+
+// Return address(es) that must sign over msg.GetSignBytes()
+func (msg MsgForceUpdateCUNonce) GetSigners() []sdk.CUAddress {
+	addr, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return []sdk.CUAddress{}
+	}
+	return []sdk.CUAddress{addr}
+}
+
+// GetSignBytes returns the message bytes to sign over.
+func (msg MsgForceUpdateCUNonce) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// quick validity check
+func (msg MsgForceUpdateCUNonce) ValidateBasic() sdk.Error {
+	_, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return ErrBadAddress(DefaultCodespace)
+	}
+
+	return nil
+}
+
 type MsgCancelWithdrawal struct {
 	FromCU  string `json:"from_cu"`
 	OrderID string `json:"order_id"`
@@ -1526,6 +1577,52 @@ func (msg MsgCancelWithdrawal) GetSignBytes() []byte {
 
 // quick validity check
 func (msg MsgCancelWithdrawal) ValidateBasic() sdk.Error {
+	_, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return ErrBadAddress(DefaultCodespace)
+	}
+	if sdk.IsIllegalOrderID(msg.OrderID) {
+		return ErrNilOrderID(DefaultCodespace)
+	}
+
+	return nil
+}
+
+type MsgForceCancelWithdrawal struct {
+	FromCU  string `json:"from_cu"`
+	OrderID string `json:"order_id"`
+}
+
+func NewMsgForceCancelWithdrawal(fromCU string, orderID string) MsgForceCancelWithdrawal {
+	msg := MsgForceCancelWithdrawal{
+		FromCU:  fromCU,
+		OrderID: orderID,
+	}
+
+	return msg
+}
+
+//nolint
+func (msg MsgForceCancelWithdrawal) Route() string { return RouterKey }
+func (msg MsgForceCancelWithdrawal) Type() string  { return "force_cancel_withdrawal" }
+
+// Return address(es) that must sign over msg.GetSignBytes()
+func (msg MsgForceCancelWithdrawal) GetSigners() []sdk.CUAddress {
+	addr, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return []sdk.CUAddress{}
+	}
+	return []sdk.CUAddress{addr}
+}
+
+// GetSignBytes returns the message bytes to sign over.
+func (msg MsgForceCancelWithdrawal) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// quick validity check
+func (msg MsgForceCancelWithdrawal) ValidateBasic() sdk.Error {
 	_, err := sdk.CUAddressFromBase58(msg.FromCU)
 	if err != nil {
 		return ErrBadAddress(DefaultCodespace)

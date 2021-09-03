@@ -29,6 +29,8 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgOpcuAssetTransferFinish{}, "bhexchain/transfer/MsgOpcuAssetTransferFinish", nil)
 	cdc.RegisterConcrete(MsgOrderRetry{}, "bhexchain/transfer/MsgOrderRetry", nil)
 	cdc.RegisterConcrete(MsgCancelWithdrawal{}, "bhexchain/transfer/MsgCancelWithdrawal", nil)
+	cdc.RegisterConcrete(MsgForceUpdateCUNonce{}, "bhexchain/transfer/MsgForceUpdateCUNonce", nil)
+	cdc.RegisterConcrete(MsgForceCancelWithdrawal{}, "bhexchain/transfer/MsgForceCancelWithdrawal", nil)
 	cdc.RegisterConcrete(&TxVote{}, "bhexchain/transfer/FinishTxVote", nil)
 	cdc.RegisterConcrete(&OrderRetryVoteBox{}, "bhexchain/transfer/OrderRetryVoteBox", nil)
 	cdc.RegisterConcrete(&OrderRetryVoteItem{}, "bhexchain/transfer/OrderRetryVoteItem", nil)

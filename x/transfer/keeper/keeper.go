@@ -48,6 +48,7 @@ type Keeper interface {
 	OpcuAssetTransferFinish(ctx sdk.Context, fromCUAddr sdk.CUAddress, orderID string, costFee sdk.Int) sdk.Result
 
 	OrderRetry(ctx sdk.Context, fromCUAddr sdk.CUAddress, orderIDs []string, retryTimes uint32, evidences []types.EvidenceValidator) sdk.Result
+	ForceUpdateCUNonce(ctx sdk.Context, fromCUAddr, cuAddr sdk.CUAddress, chain string, multisignAddr string, nonce uint64) sdk.Result
 }
 
 // BaseKeeper manages transfers between accounts. It implements the ReceiptKeeper interface.
@@ -157,6 +158,20 @@ func (keeper *BaseKeeper) UndelegateCoins(ctx sdk.Context, moduleAccAddr, delega
 	keeper.rk.SaveReceiptToResult(receipt, &result)
 
 	return result, nil
+}
+
+func (keeper *BaseKeeper) ForceUpdateCUNonce(ctx sdk.Context, fromCUAddr, cuAddr sdk.CUAddress, chain string, multisignAddr string, nonce uint64) sdk.Result {
+	result := sdk.Result{}
+	bValidator, _ := keeper.sk.IsActiveKeyNode(ctx, fromCUAddr)
+	if !bValidator {
+		return sdk.ErrInvalidTx(fmt.Sprintf("updateopcunonce from not a validator :%v", fromCUAddr)).Result()
+	}
+
+	AssetCU := keeper.ik.GetCUIBCAsset(ctx, cuAddr)
+	AssetCU.SetNonce(chain, nonce, multisignAddr)
+	AssetCU.SetEnableSendTx(true, chain, multisignAddr)
+	keeper.ik.SetCUIBCAsset(ctx, AssetCU)
+	return result
 }
 
 func (keeper *BaseKeeper) OrderRetry(ctx sdk.Context, fromCUAddr sdk.CUAddress, orderIDs []string, retryTimes uint32, evidences []types.EvidenceValidator) sdk.Result {

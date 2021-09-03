@@ -245,6 +245,10 @@ func (msg MsgKeyNodeHeartbeat) ValidateBasic() sdk.Error {
 	return nil
 }
 
+func (msg MsgKeyNodeHeartbeat) IsSettleOnlyMsg() bool {
+	return false
+}
+
 // MsgDelegate - struct for bonding transactions
 type MsgDelegate struct {
 	DelegatorAddress sdk.CUAddress  `json:"delegator_address" yaml:"delegator_address"`

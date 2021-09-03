@@ -73,4 +73,6 @@ type (
 	MsgOpcuAssetTransferFinish     = types.MsgOpcuAssetTransferFinish
 	MsgOrderRetry                  = types.MsgOrderRetry
 	MsgCancelWithdrawal            = types.MsgCancelWithdrawal
+	MsgForceUpdateCUNonce          = types.MsgForceUpdateCUNonce
+	MsgForceCancelWithdrawal       = types.MsgForceCancelWithdrawal
 )

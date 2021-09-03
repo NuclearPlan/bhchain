@@ -85,6 +85,11 @@ func NewHandler(k keeper.BaseKeeper) sdk.Handler {
 
 		case MsgCancelWithdrawal:
 			return handleMsgCancelWithdrawal(ctx, k, msg)
+		case MsgForceUpdateCUNonce:
+			return handleMsgForceUpdateCUNonce(ctx, k, msg)
+
+		case MsgForceCancelWithdrawal:
+			return handleMsgForceCancelWithdrawal(ctx, k, msg)
 
 		default:
 			errMsg := fmt.Sprintf("unrecognized bank message type: %T", msg)
@@ -672,6 +677,73 @@ func handleMsgCancelWithdrawal(ctx sdk.Context, k keeper.BaseKeeper, msg MsgCanc
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCancelWithdrawal,
+			sdk.NewAttribute(types.AttributeKeySender, msg.FromCU),
+			sdk.NewAttribute(types.AttributeKeyOrderID, msg.OrderID),
+		),
+	})
+
+	result.Events = append(result.Events, ctx.EventManager().Events()...)
+	return result
+}
+
+func handleMsgForceUpdateCUNonce(ctx sdk.Context, k keeper.BaseKeeper, msg MsgForceUpdateCUNonce) sdk.Result {
+	ctx.Logger().Info("handleMsgForceUpdateOpcuNonce", "msg", msg)
+	if !k.IsSendEnabled(ctx) {
+		return types.ErrSendDisabled(k.Codespace()).Result()
+	}
+
+	//for fix bug
+	if ctx.BlockHeight() > 500000 {
+		return sdk.ErrInternal("invalid block height").Result()
+	}
+
+	fromCUAddr, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return sdk.ErrInvalidAddr(fmt.Sprintf("invalid to CU:%v", msg.FromCU)).Result()
+	}
+
+	cuAddr, err := sdk.CUAddressFromBase58(msg.CUAddr)
+	if err != nil {
+		return sdk.ErrInvalidAddr(fmt.Sprintf("invalid to CU:%v", msg.CUAddr)).Result()
+	}
+
+	result := k.ForceUpdateCUNonce(ctx, fromCUAddr, cuAddr, msg.Chain, msg.AssetAddr, msg.Nonce)
+	if result.Code != sdk.CodeOK {
+		return result
+	}
+
+	//Add events
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeForceUpdateCUNonce,
+			sdk.NewAttribute(types.AttributeKeySender, msg.FromCU),
+		),
+	})
+
+	result.Events = append(result.Events, ctx.EventManager().Events()...)
+	return result
+}
+
+func handleMsgForceCancelWithdrawal(ctx sdk.Context, k keeper.BaseKeeper, msg MsgForceCancelWithdrawal) sdk.Result {
+	ctx.Logger().Info("handleMsgForceCancelWithdrawal", "msg", msg)
+	fromCUAddr, err := sdk.CUAddressFromBase58(msg.FromCU)
+	if err != nil {
+		return sdk.ErrInvalidAddr(fmt.Sprintf("invalid to CU:%v", msg.FromCU)).Result()
+	}
+	//for fix bug
+	if ctx.BlockHeight() > 500000 {
+		return sdk.ErrInternal("invalid block height").Result()
+	}
+
+	result := k.ForceCancelWithdrawal(ctx, fromCUAddr, msg.OrderID)
+	if result.Code != sdk.CodeOK {
+		return result
+	}
+
+	//Add events
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeForceCancelWithdrawal,
 			sdk.NewAttribute(types.AttributeKeySender, msg.FromCU),
 			sdk.NewAttribute(types.AttributeKeyOrderID, msg.OrderID),
 		),

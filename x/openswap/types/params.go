@@ -14,10 +14,10 @@ import (
 var (
 	DefaultMinimumLiquidity            = sdk.NewInt(1000)
 	DefaultLimitSwapMatchingGas        = sdk.NewUint(50000)
-	DefaultMaxFeeRate                  = sdk.NewDecWithPrec(1, 1)  // 0.1
-	DefaultLpRewardRate                = sdk.NewDecWithPrec(13, 4) // 0.0013
-	DefaultRefererTransactionBonusRate = sdk.NewDecWithPrec(1, 4)  // 0.0001
-	DefaultRepurchaseRate              = sdk.NewDecWithPrec(4, 4)  // 0.0004
+	DefaultMaxFeeRate                  = sdk.NewDecWithPrec(1, 1)   // 0.1
+	DefaultLpRewardRate                = sdk.NewDecWithPrec(125, 5) // 0.00125
+	DefaultRefererTransactionBonusRate = sdk.NewDecWithPrec(0, 4)   // 0.0001
+	DefaultRepurchaseRate              = sdk.NewDecWithPrec(125, 5) // 0.00125
 	DefaultRepurchaseDuration          = int64(1000)
 	DefaultRepurchaseToken             = sdk.NativeToken
 	DefaultRepurchaseRoutingToken      = tokentypes.CalSymbol("usdt", sdk.NativeToken).String()

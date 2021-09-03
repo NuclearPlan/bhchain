@@ -62,8 +62,8 @@ func DefaultGenesisState() GenesisState {
 			MinVoteTime:  DefaultMinVoteTime,
 		},
 		TallyParams: TallyParams{
-			Quorum:    sdk.NewDecWithPrec(667, 3),
-			Threshold: sdk.NewDecWithPrec(75, 2),
+			Quorum:    sdk.NewDecWithPrec(5, 1),
+			Threshold: sdk.NewDecWithPrec(5, 1),
 			Veto:      sdk.NewDecWithPrec(334, 3),
 		},
 		ProposalOnlyKeyNode: true,

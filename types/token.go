@@ -30,6 +30,7 @@ var (
 	KeyGasLimit           = "gas_limit"
 	KeyConfirmations      = "confirmations"
 	KeyNeedCollectFee     = "need_collect_fee"
+	KeyNonceBased         = "nonce_based"
 )
 
 var (
