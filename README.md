@@ -1,32 +1,58 @@
-<div align="center">
+<div align="">
   <h1> Bhchain </h1>
 </div>
 
-![GitHub](https://img.shields.io/badge/License-Apache2.0-brightgreen)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/bluehelix-chain/bhchain)
+
+
 
 Bhex Chain is powered by bluehelix, the next-generation decentralized custody and clearing technology.
 
 <img width="749" height="528" src="https://static.hcdncn.com/hbtcchain/static/img/FM.5af890d6.png"/>
 
-## Document
-* EN https://docs.bhexchain.com/en/
-* CN https://docs.bhexchain.com/
+![GitHub](https://img.shields.io/badge/License-Apache2.0-brightgreen)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/bluehelix-chain/bhchain)
+![LoC](https://tokei.rs/b1/github/bluehelix-chain/bhchain)
 
 
-## Explorer
-* https://explorer.bhexchain.com/index
+## Home Page
+
+https://www.bhexchain.com
 
 
-## Dex
-* https://hdex.bhexchain.com/swap
+## Building
 
-
-## Build
-    go build ./cmd/bhcd/
+    git clone https://github.com/bluehelix-chain/bhchain
+    cd bhchain
     
+    #build bhcd for running node
+    go build ./cmd/bhcd
+    
+    #build bhcli for cli tool
+    go build ./cmd./bhcli
+## Quick Start
+
+https://docs.bhexchain.com/guide/quick-start.html
+
 ## RUN&CONFIG
 * https://docs.bhexchain.com/guide/node.html#id7
+
+## Documentation
+
+* ENGLISH https://docs.bhexchain.com/en
+* 中文 https://docs.bhexchain.com
+
+## Dex
+https://hdex.bhexchain.com/swap
+
+## Wallet
+
+android & ios https://wallet.bhexchain.com
+
+web https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn 
+
+## Chain Explorer
+* https://explorer.bhexchain.com/index
+
 
 
 ## Security Suggestion
